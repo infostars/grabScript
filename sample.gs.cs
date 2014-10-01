@@ -1,3 +1,5 @@
+namespace sdstream.grabScript.test;
+
 class grab
 {
     Json config = {
