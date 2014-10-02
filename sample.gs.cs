@@ -1,12 +1,14 @@
+<?php
+
 namespace sdstream.grabScript.test;
 
 class grab
 {
-    Json config = {
+    Json config = '{
         start_url: "http://ya.ru/",
         userAgent: "Curl 0.7",
         parserDriver: "grabtemplate"
-    };
+    }';
 
     List<object> queue;
 
@@ -15,7 +17,7 @@ class grab
         ParsedItem item = (ParsedItem)item;
 
         // Пример объекта ParserItem
-        Json sampleItemJson = {
+        Json sampleItemJson = '{
             apiObject: "document",
             parser: {
                 driver: "template",
@@ -29,7 +31,7 @@ class grab
                 // ... etc
                 hub__id: 1
             }
-        };
+        }';
         ParsedItem sampleItem = ParsedItem.fromJson(sampleItemJson);
     }
 
