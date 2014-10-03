@@ -1,5 +1,3 @@
-<?php
-
 namespace sdstream.grabScript.test;
 
 class grab
@@ -12,9 +10,9 @@ class grab
 
     List<object> queue;
 
-    void onForeachCycleItem(object item)
+    void onForeachCycleItem(object inputItem)
     {
-        ParsedItem item = (ParsedItem)item;
+        ParsedItem item = ParsedItem.fromObject(inputItem);
 
         // Пример объекта ParserItem
         Json sampleItemJson = '{
