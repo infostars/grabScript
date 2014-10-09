@@ -52,25 +52,46 @@ class helper
 
     public static function getValueByToken($token)
     {
-        $result = '';
+        $result = [
+            'type' => null,
+            'value' => null
+        ];
         switch($token['type']) {
             case 'VARIABLE_PATH':
-                $result = self::dotPathToPhpPath($token['value']);
+                $result['type'] = 'mixed';
+                $result['value'] = self::dotPathToPhpPath($token['value']);
                 break;
             case 'STRING':
-                $result = "'{$token['value']}'";
+                $result['type'] = 'string';
+                $result['value'] = "'{$token['value']}'";
                 break;
             case 'INTEGER':
-                $result = (int)$token['value'];
+                $result['type'] = 'int';
+                $result['value'] = (int)$token['value'];
+                break;
             case 'FLOAT':
-                $result = (float)$token['value'];
+                $result['type'] = 'float';
+                $result['value'] = (float)$token['value'];
                 break;
             case 'VARIABLE':
+                $result['type'] = 'mixed';
+                $result['value'] = $token['value'];
+                break;
             case 'STRING_QUOTED':
+                $result['type'] = 'string';
+                $result['value'] = $token['value'];
+                break;
             case 'BOOL_TRUE':
+                $result['type'] = 'bool';
+                $result['value'] = $token['value'];
+                break;
             case 'BOOL_FALSE':
+                $result['type'] = 'bool';
+                $result['value'] = $token['value'];
+                break;
             case 'NULL':
-                $result = $token['value'];
+                $result['type'] = 'null';
+                $result['value'] = $token['value'];
                 break;
         }
 

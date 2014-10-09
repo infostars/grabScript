@@ -30,6 +30,7 @@ class returnParser
                 case 'STRING':
                 case 'STRING_QUOTED':
                 case 'INTEGER':
+                case 'FLOAT':
                 case 'BOOL_TRUE':
                 case 'BOOL_FALSE':
                 case 'NULL':
