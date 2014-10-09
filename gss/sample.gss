@@ -1,0 +1,33 @@
+
+Package "sds.sdk.test.start"
+
+Var Queue $queue
+
+Block start {
+    $queue.append "http://yandex.ru"
+    Foreach $queue
+        - set item $item
+        - call this.process
+}
+
+Block process {
+    Input $url
+    Load $url
+        - set proxy "random"
+        - set userAgent generate
+        - set attempts 5
+        - put result to $content
+    Parse:template $content
+        - set match auto
+        - set on-fail skip
+        - put result to $result
+    If $result.status == false
+        - Output.print "Status FAIL"
+        - break
+    Foreach $result.items
+        - call API.document.post
+    Foreach $result.links
+        - call $queue.append
+
+    Return $result
+}
