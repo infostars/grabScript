@@ -53,6 +53,8 @@ class gsphp
         $packageData = helper::splitNamespaceAndClass($namespace);
         $date = date("Y-m-d H:i:s");
         $base = <<<PHP
+<?php
+
 namespace {$packageData['namespace']};
 
 /**
@@ -105,7 +107,7 @@ PHP;
     /**
      * @var {$var['instanceOf']} {$var['varData']['value']}
      */
-    protected {$var['varData']['value']}
+    protected {$var['varData']['value']};
 
 PHP;
         return $content;
@@ -193,7 +195,7 @@ PHP;
 PHP;
         $result['return'] = <<<PHP
 
-        return {$return['value']}
+        return {$return['value']};
 PHP;
 
 
