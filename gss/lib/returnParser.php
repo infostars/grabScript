@@ -6,9 +6,9 @@ namespace greevex\gss\lib;
  * @date: 10/1/14 6:10 PM
  */
 
-class variableMethodParser
+class returnParser
 {
-    const TYPE = 'variable_call';
+    const TYPE = 'return';
     const CAN_WAIT = false;
 
     private $variableCallData = [
@@ -23,13 +23,7 @@ class variableMethodParser
         $ftoken = reset($lineTokens);
         foreach($lineTokens as $lineToken) {
             switch($lineToken['type']) {
-                case 'VARIABLE_METHOD':
-                    $varData = explode('.', $lineToken['value']);
-                    $this->variableCallData['meta']['callable'] = [
-                        'varName' => $varData[0],
-                        'method' => $varData[1],
-                        'varData' => $lineToken
-                    ];
+                case 'RETURN':
                     break;
                 case 'VARIABLE':
                 case 'VARIABLE_PATH':
@@ -39,12 +33,12 @@ class variableMethodParser
                 case 'BOOL_TRUE':
                 case 'BOOL_FALSE':
                 case 'NULL':
-                    $this->variableCallData['meta']['arguments'][] = $lineToken;
+                    $this->variableCallData['meta']['put_result_to'] = $lineToken;
                     break;
             }
         }
-        if(!isset($this->variableCallData['meta']['callable'])) {
-            error::throwNewException("Unable to find callable", $ftoken['line'], $ftoken['pos']);
+        if(!isset($this->variableCallData['meta']['put_result_to'])) {
+            error::throwNewException("Expected something to return", $ftoken['line'], $ftoken['pos']);
         }
     }
 

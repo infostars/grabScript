@@ -1,0 +1,359 @@
+{
+    "package": "sds.sdk.test.start",
+    "vars": {
+        "queue": {
+            "instanceOf": "Queue",
+            "varName": "queue",
+            "varData": {
+                "type": "VARIABLE",
+                "value": "$queue",
+                "line": 4,
+                "pos": 10,
+                "len": 6
+            }
+        }
+    },
+    "blocks": {
+        "start": {
+            "name": "start",
+            "contents": [
+                {
+                    "type": "variable_call",
+                    "meta": {
+                        "callable": {
+                            "varName": "$queue",
+                            "method": "append",
+                            "varData": {
+                                "type": "VARIABLE_METHOD",
+                                "value": "$queue.append",
+                                "line": 7,
+                                "pos": 4,
+                                "len": 13
+                            }
+                        },
+                        "arguments": [
+                            {
+                                "type": "STRING_QUOTED",
+                                "value": "\"http://yandex.ru\"",
+                                "line": 7,
+                                "pos": 18,
+                                "len": 18
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "foreach",
+                    "meta": {
+                        "params": {
+                            "item": {
+                                "type": "VARIABLE",
+                                "value": "$item",
+                                "line": 9,
+                                "pos": 19,
+                                "len": 5
+                            }
+                        },
+                        "from": {
+                            "type": "VARIABLE",
+                            "value": "$queue",
+                            "line": 8,
+                            "pos": 12,
+                            "len": 6
+                        },
+                        "call": [
+                            {
+                                "callable": {
+                                    "type": "THIS_METHOD",
+                                    "value": "this.process",
+                                    "line": 10,
+                                    "pos": 15,
+                                    "len": 12
+                                },
+                                "arguments": [
+                                    {
+                                        "type": "VARIABLE",
+                                        "value": "$item",
+                                        "line": 10,
+                                        "pos": 28,
+                                        "len": 5
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "process": {
+            "name": "process",
+            "contents": [
+                {
+                    "type": "input",
+                    "meta": [
+                        {
+                            "type": "VARIABLE",
+                            "value": "$url",
+                            "line": 14,
+                            "pos": 10,
+                            "len": 4
+                        }
+                    ]
+                },
+                {
+                    "type": "action",
+                    "meta": {
+                        "arguments": [
+                            {
+                                "type": "VARIABLE",
+                                "value": "$url",
+                                "line": 15,
+                                "pos": 9,
+                                "len": 4
+                            }
+                        ],
+                        "params": {
+                            "proxy": {
+                                "type": "STRING_QUOTED",
+                                "value": "\"random\"",
+                                "line": 16,
+                                "pos": 20,
+                                "len": 8
+                            },
+                            "userAgent": {
+                                "type": "OBJECT",
+                                "value": "generate",
+                                "line": 17,
+                                "pos": 24,
+                                "len": 8
+                            },
+                            "attempts": {
+                                "type": "INTEGER",
+                                "value": "5",
+                                "line": 18,
+                                "pos": 23,
+                                "len": 1
+                            }
+                        },
+                        "instanceOf": {
+                            "type": "OBJECT",
+                            "value": "Load",
+                            "line": 15,
+                            "pos": 4,
+                            "len": 4
+                        },
+                        "put_result_to": {
+                            "type": "VARIABLE",
+                            "value": "$content",
+                            "line": 19,
+                            "pos": 24,
+                            "len": 8
+                        }
+                    }
+                },
+                {
+                    "type": "action",
+                    "meta": {
+                        "arguments": [
+                            {
+                                "type": "VARIABLE",
+                                "value": "$content",
+                                "line": 20,
+                                "pos": 19,
+                                "len": 8
+                            }
+                        ],
+                        "params": {
+                            "match": {
+                                "type": "OBJECT",
+                                "value": "auto",
+                                "line": 21,
+                                "pos": 20,
+                                "len": 4
+                            },
+                            "on_fail": {
+                                "type": "OBJECT",
+                                "value": "skip",
+                                "line": 22,
+                                "pos": 22,
+                                "len": 4
+                            }
+                        },
+                        "instanceOf": {
+                            "type": "OBJECT",
+                            "value": "Parse",
+                            "line": 20,
+                            "pos": 4,
+                            "len": 5
+                        },
+                        "factory": {
+                            "type": "OBJECT",
+                            "value": "template",
+                            "line": 20,
+                            "pos": 10,
+                            "len": 8
+                        },
+                        "put_result_to": {
+                            "type": "VARIABLE",
+                            "value": "$result",
+                            "line": 23,
+                            "pos": 24,
+                            "len": 7
+                        }
+                    }
+                },
+                {
+                    "type": "if",
+                    "meta": {
+                        "condition": {
+                            "item1": {
+                                "type": "VARIABLE_PATH",
+                                "value": "$result.data.status",
+                                "line": 24,
+                                "pos": 7,
+                                "len": 19
+                            },
+                            "cond": {
+                                "type": "EQUALS",
+                                "value": "==",
+                                "line": 24,
+                                "pos": 27,
+                                "len": 2
+                            },
+                            "item2": {
+                                "type": "BOOL_FALSE",
+                                "value": "false",
+                                "line": 24,
+                                "pos": 30,
+                                "len": 5
+                            }
+                        },
+                        "call": [
+                            {
+                                "callable": {
+                                    "type": "OBJECT_PATH",
+                                    "value": "SDS.output.print",
+                                    "line": 25,
+                                    "pos": 15,
+                                    "len": 16
+                                },
+                                "arguments": [
+                                    {
+                                        "type": "STRING_QUOTED",
+                                        "value": "\"Status FAIL\"",
+                                        "line": 25,
+                                        "pos": 32,
+                                        "len": 13
+                                    }
+                                ]
+                            }
+                        ],
+                        "params": {
+                            "break": {
+                                "type": "BOOL_TRUE",
+                                "value": "true",
+                                "line": 26,
+                                "pos": 20,
+                                "len": 4
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "foreach",
+                    "meta": {
+                        "params": {
+                            "item": {
+                                "type": "VARIABLE",
+                                "value": "$item",
+                                "line": 28,
+                                "pos": 19,
+                                "len": 5
+                            }
+                        },
+                        "from": {
+                            "type": "VARIABLE_PATH",
+                            "value": "$result.data.items",
+                            "line": 27,
+                            "pos": 12,
+                            "len": 18
+                        },
+                        "call": [
+                            {
+                                "callable": {
+                                    "type": "OBJECT_PATH",
+                                    "value": "SDS.api.document.post",
+                                    "line": 29,
+                                    "pos": 15,
+                                    "len": 21
+                                },
+                                "arguments": [
+                                    {
+                                        "type": "VARIABLE",
+                                        "value": "$item",
+                                        "line": 29,
+                                        "pos": 37,
+                                        "len": 5
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "foreach",
+                    "meta": {
+                        "params": {
+                            "item": {
+                                "type": "VARIABLE",
+                                "value": "$link",
+                                "line": 31,
+                                "pos": 19,
+                                "len": 5
+                            }
+                        },
+                        "from": {
+                            "type": "VARIABLE_PATH",
+                            "value": "$result.data.links",
+                            "line": 30,
+                            "pos": 12,
+                            "len": 18
+                        },
+                        "call": [
+                            {
+                                "callable": {
+                                    "type": "VARIABLE_METHOD",
+                                    "value": "$queue.append",
+                                    "line": 32,
+                                    "pos": 15,
+                                    "len": 13
+                                },
+                                "arguments": [
+                                    {
+                                        "type": "VARIABLE",
+                                        "value": "$link",
+                                        "line": 32,
+                                        "pos": 29,
+                                        "len": 5
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "return": {
+                "type": "return",
+                "meta": {
+                    "put_result_to": {
+                        "type": "VARIABLE",
+                        "value": "$result",
+                        "line": 34,
+                        "pos": 11,
+                        "len": 7
+                    }
+                }
+            }
+        }
+    }
+}

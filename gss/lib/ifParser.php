@@ -6,7 +6,7 @@ namespace greevex\gss\lib;
  * @date: 10/1/14 6:10 PM
  */
 
-class foreachParser
+class ifParser
 {
     protected static $instance;
 
@@ -25,13 +25,17 @@ class foreachParser
         return isset(self::$instance);
     }
 
-    const TYPE = 'foreach';
+    const TYPE = 'if';
     const CAN_WAIT = true;
 
-    private $foreachData = [
+    private $ifData = [
         'type' => self::TYPE,
         'meta' => [
-            'params' => [],
+            'condition' => [
+                'item1' => null,
+                'cond' => null,
+                'item2' => null,
+            ]
         ]
     ];
 
@@ -39,18 +43,49 @@ class foreachParser
     {
         $ftoken = reset($lineTokens);
         foreach($lineTokens as $lineToken) {
-            switch($lineToken['type']) {
-                case 'VARIABLE_METHOD':
-                case 'VARIABLE':
-                case 'VARIABLE_PATH':
-                case 'OBJECT_PATH':
-                case 'OBJECT_METHOD':
-                    $this->foreachData['meta']['from'] = $lineToken;
-                    break;
+            if(!isset($this->ifData['meta']['condition']['item1'])
+            || isset($this->ifData['meta']['condition']['cond']) && !isset($this->ifData['meta']['condition']['item2'])) {
+                switch($lineToken['type']) {
+                    case 'VARIABLE':
+                    case 'VARIABLE_METHOD':
+                    case 'VARIABLE_PATH':
+                    case 'OBJECT_METHOD':
+                    case 'OBJECT_PATH':
+                    case 'STRING':
+                    case 'STRING_QUOTED':
+                    case 'INTEGER':
+                    case 'BOOL_TRUE':
+                    case 'BOOL_FALSE':
+                    case 'NULL':
+                        if(!isset($this->ifData['meta']['condition']['item1'])) {
+                            $this->ifData['meta']['condition']['item1'] = $lineToken;
+                        } else {
+                            $this->ifData['meta']['condition']['item2'] = $lineToken;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } elseif(!isset($this->ifData['meta']['condition']['cond'])) {
+                switch($lineToken['type']) {
+                    case 'EQUALS':
+                    case 'NOT_EQUALS':
+                    case 'GTE':
+                    case 'LTE':
+                    case 'GT':
+                    case 'LT':
+                        $this->ifData['meta']['condition']['cond'] = $lineToken;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-        if(!isset($this->foreachData['meta']['from'])) {
-            error::throwNewException("Unable to find any iterator object or variable", $ftoken['line'], $ftoken['pos']);
+
+        if(!isset($this->ifData['meta']['condition']['item1'])
+            || !isset($this->ifData['meta']['condition']['item2'])
+            || !isset($this->ifData['meta']['condition']['cond'])) {
+            error::throwNewException('Expected two arguments and condition', $ftoken['line'], $ftoken['pos']);
         }
 
         self::$instance = $this;
@@ -58,7 +93,6 @@ class foreachParser
 
     public function eatParams($lineTokens)
     {
-//        var_dump($lineTokens);
         $ftoken = array_shift($lineTokens);
         switch($ftoken['type']) {
             case 'PARAM_SET':
@@ -73,7 +107,10 @@ class foreachParser
                 if(!isset($set['param'], $set['value'])) {
                     return error::throwNewException('No param or value', $ftoken['line'], $ftoken['pos']);
                 }
-                $this->foreachData['meta']['params'][$set['param']] = $set['value'];
+                $this->ifData['meta']['params'][$set['param']] = $set['value'];
+                return true;
+                break;
+            case 'PARAM_BREAK':
                 return true;
                 break;
             case 'PARAM_CALL':
@@ -110,10 +147,10 @@ class foreachParser
                 if(empty($call)) {
                     return error::throwNewException("Expected call params", $ftoken['line'], $ftoken['pos']);
                 }
-                if(!isset($this->foreachData['meta']['call'])) {
-                    $this->foreachData['meta']['call'] = [];
+                if(!isset($this->ifData['meta']['call'])) {
+                    $this->ifData['meta']['call'] = [];
                 }
-                $this->foreachData['meta']['call'][] = $call;
+                $this->ifData['meta']['call'][] = $call;
                 return true;
                 break;
             case 'PARAM_PUT_RESULT':
@@ -123,16 +160,19 @@ class foreachParser
                         case 'WHITESPACE':
                             continue 2;
                         case 'VARIABLE':
-                            $this->foreachData['meta']['put_result_to'] = $lineToken;
+                            $this->ifData['meta']['put_result_to'] = $lineToken;
                             break;
                         default:
                             return error::throwNewException("Unexpected {$lineToken['type']}", $lineToken['line'], $lineToken['pos']);
                             break;
                     }
                 }
-                if(!isset($this->foreachData['meta']['put_result_to'])) {
+                if(!isset($this->ifData['meta']['put_result_to'])) {
                     return error::throwNewException("Expected variable for result", $ftoken['line'], $ftoken['pos']);
                 }
+                return true;
+                break;
+            case 'PARAM':
                 return true;
                 break;
             default:
@@ -143,6 +183,6 @@ class foreachParser
 
     public function dump()
     {
-        return $this->foreachData;
+        return $this->ifData;
     }
 }

@@ -34,11 +34,15 @@ class blockParser
     public function __construct($blockName)
     {
         $this->blockName = $blockName;
+        $this->blockData['name'] = $this->blockName;
     }
 
     public function dump()
     {
-        return $this->blockData;
+        $copy = $this->blockData;
+        unset($copy['started']);
+        unset($copy['ended']);
+        return $copy;
     }
 
     public function eatLineTokens($lineTokens)
@@ -49,12 +53,28 @@ class blockParser
             }
             array_shift($lineTokens);
         }
+        $ftoken = $lineTokens[0];
         /** @var foreachParser $foreachParser */
         /** @var variableMethodParser $variableMethod */
         /** @var inputParser $inputParser */
         /** @var foreachParser $foreachParser */
-        switch($lineTokens[0]['type']) {
+        switch($ftoken['type']) {
+            case 'INPUT':
+                if($this->checkInstances($lineTokens)) {
+                    break;
+                }
+                $this->setEnded();
+                $inputParser = new inputParser($lineTokens);
+                $this->blockData['contents'][] = $inputParser->dump();
+                if(!$inputParser::CAN_WAIT) {
+                    unset($inputParser);
+                }
+                break;
             case 'VARIABLE_METHOD':
+                if($this->checkInstances($lineTokens)) {
+                    break;
+                }
+                $this->setEnded();
                 $variableMethod = new variableMethodParser($lineTokens);
                 $this->blockData['contents'][] = $variableMethod->dump();
                 if(!$variableMethod::CAN_WAIT) {
@@ -62,33 +82,69 @@ class blockParser
                 }
                 break;
             case 'OBJECT':
-                break;
-            case 'INPUT':
-                $inputParser = new inputParser($lineTokens);
-                $this->blockData['contents'][] = $inputParser->dump();
-                if(!$inputParser::CAN_WAIT) {
-                    unset($inputParser);
+                if($this->checkInstances($lineTokens)) {
+                    break;
                 }
-                break;
+                $this->setEnded();
+                new actionParser($lineTokens);
                 break;
             case 'FOREACH':
+                $this->setEnded();
                 new foreachParser($lineTokens);
                 break;
             case 'IF':
+                $this->setEnded();
+                new ifParser($lineTokens);
                 break;
             case 'RETURN':
+                $this->setEnded();
+                $returnParser = new returnParser($lineTokens);
+                $this->blockData['return'] = $returnParser->dump();
+                if(!$returnParser::CAN_WAIT) {
+                    unset($returnParser);
+                }
                 break;
             case 'WHITESPACE':
                 break;
             default:
-                if(foreachParser::hasInstance()) {
-                    foreachParser::getInstance()->eatParams($lineTokens);
+                if($this->checkInstances($lineTokens)) {
+                    break;
                 }
-                return error::throwNewException("Unexpected {$lineTokens[0]['type']}", $lineTokens[0]['line'], $lineTokens[0]['pos']);
+                $this->setEnded();
+                return error::throwNewException("Unexpected {$ftoken['type']}", $ftoken['line'], $ftoken['pos']);
                 break;
         }
 
         return true;
+    }
+
+    protected function checkInstances($lineTokens)
+    {
+        if(foreachParser::hasInstance()) {
+            $status = foreachParser::getInstance()->eatParams($lineTokens);
+            if(!$status) {
+                $this->blockData['contents'][] = foreachParser::getInstance()->dump();
+                foreachParser::getInstance()->dropInstance();
+            }
+            return $status;
+        }
+        if(actionParser::hasInstance()) {
+            $status = actionParser::getInstance()->eatParams($lineTokens);
+            if(!$status) {
+                $this->blockData['contents'][] = actionParser::getInstance()->dump();
+                actionParser::getInstance()->dropInstance();
+            }
+            return $status;
+        }
+        if(ifParser::hasInstance()) {
+            $status = ifParser::getInstance()->eatParams($lineTokens);
+            if(!$status) {
+                $this->blockData['contents'][] = ifParser::getInstance()->dump();
+                ifParser::getInstance()->dropInstance();
+            }
+            return $status;
+        }
+        return false;
     }
 
     public function setStarted()
@@ -99,5 +155,17 @@ class blockParser
     public function setEnded()
     {
         $this->blockData['ended'] = true;
+        if(foreachParser::hasInstance()) {
+            $this->blockData['contents'][] = foreachParser::getInstance()->dump();
+            foreachParser::getInstance()->dropInstance();
+        }
+        if(actionParser::hasInstance()) {
+            $this->blockData['contents'][] = actionParser::getInstance()->dump();
+            actionParser::getInstance()->dropInstance();
+        }
+        if(ifParser::hasInstance()) {
+            $this->blockData['contents'][] = ifParser::getInstance()->dump();
+            ifParser::getInstance()->dropInstance();
+        }
     }
 }

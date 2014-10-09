@@ -26,9 +26,13 @@ class codeScanner
         'PARAM_SET' => '\-\s+set',
         'PARAM' => '\-',
 
+        'BOOL_TRUE' => 'true',
+        'BOOL_FALSE' => 'false',
+        'NULL' => 'null',
         'FLOAT' => '\d+\.\d+',
         'INTEGER' => '\d+',
         'STRING_QUOTED' => '"(?:[^"\\\\]|\\\\.)+"',
+        'VARIABLE_PATH' => '\$[a-zA-Z_][a-zA-Z_0-9]*(?:\.[a-zA-Z_][a-zA-Z_0-9]*){2,}',
         'VARIABLE_METHOD' => '\$[a-zA-Z_][a-zA-Z_0-9]*\.[a-zA-Z_][a-zA-Z_0-9]*',
         'VARIABLE' => '\$[a-zA-Z_][a-zA-Z_0-9]*',
         'THIS_METHOD' => 'this\.[a-zA-Z_][a-zA-Z_0-9]*',

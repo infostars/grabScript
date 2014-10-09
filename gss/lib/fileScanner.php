@@ -31,10 +31,6 @@ class fileScanner
         $codeScanner = new codeScanner($content);
 
         $codeTokens = $codeScanner->scan();
-        foreach($codeTokens as $line) {
-            echo "{$line['tokens_str']}\n";
-        }
-        echo "\n===\n";
 
         $tokenParser = new tokenParser($codeTokens);
         return $tokenParser->parse();

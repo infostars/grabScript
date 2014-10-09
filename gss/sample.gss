@@ -7,7 +7,7 @@ Block start {
     $queue.append "http://yandex.ru"
     Foreach $queue
         - set item $item
-        - call this.process
+        - call this.process $item
 }
 
 Block process {
@@ -19,15 +19,17 @@ Block process {
         - put result to $content
     Parse:template $content
         - set match auto
-        - set on-fail skip
+        - set on_fail skip
         - put result to $result
-    If $result.status == false
-        - Output.print "Status FAIL"
-        - break
-    Foreach $result.items
-        - call API.document.post
-    Foreach $result.links
-        - call $queue.append
+    If $result.data.status == false
+        - call SDS.output.print "Status FAIL"
+        - set break true
+    Foreach $result.data.items
+        - set item $item
+        - call SDS.api.document.post $item
+    Foreach $result.data.links
+        - set item $link
+        - call $queue.append $link
 
     Return $result
 }

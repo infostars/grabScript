@@ -44,17 +44,18 @@ class tokenParser
                         foreach($lineTokens['tokens'] as $_lineToken) {
                             switch($_lineToken['type']) {
                                 case 'OBJECT':
-                                    $var['instanceof'] = $_lineToken['value'];
+                                    $var['instanceOf'] = $_lineToken['value'];
                                     break;
                                 case 'VARIABLE':
-                                    $var['varname'] = ltrim($_lineToken['value'], '$');
+                                    $var['varName'] = ltrim($_lineToken['value'], '$');
+                                    $var['varData'] = $_lineToken;
                                     break 2;
                             }
                         }
-                        if(!isset($var['instanceof'], $var['varname'])) {
+                        if(!isset($var['instanceOf'], $var['varName'])) {
                             return error::throwNewException('Unable to find variable initialization', $lineNumber, $lineToken['pos']);
                         }
-                        $this->result['vars'][$var['varname']] = $var;
+                        $this->result['vars'][$var['varName']] = $var;
                         break 2;
                     case 'BLOCK':
                         $block = [];
@@ -96,10 +97,5 @@ class tokenParser
         }
 
         return $this->result;
-    }
-
-    protected function processBlock($currentBlock, $lineTokens)
-    {
-
     }
 }
