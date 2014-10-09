@@ -158,6 +158,9 @@ PHP;
             'annotation' => '',
             'input' => ''
         ];
+        if(!isset($block['input']['meta'])) {
+            return $result;
+        }
         foreach($block['input']['meta'] as $inputParam) {
             $someVar = helper::getValueByToken($inputParam);
             $result['annotation'] .= <<<PHP
@@ -166,7 +169,6 @@ PHP;
 PHP;
             $input[] = $someVar['value'];
         }
-        var_dump($result);
         $result['input'] = implode(',', $input);
         return $result;
     }
@@ -177,13 +179,13 @@ PHP;
 
     private function block_return($block)
     {
-        if(empty($block['return'])) {
-            return '';
-        }
         $result = [
             'annotation' => '',
             'return' => ''
         ];
+        if(empty($block['return'])) {
+            return $result;
+        }
         $return = helper::getValueByToken($block['return']['meta']['put_result_to']);
         $result['annotation'] = <<<PHP
 
