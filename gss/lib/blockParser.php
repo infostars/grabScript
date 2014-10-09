@@ -11,6 +11,7 @@ class blockParser
     private $blockName;
     private $blockData = [
         'name' => null,
+        'input' => [],
         'started' => false,
         'ended' => false,
         'contents' => []
@@ -65,7 +66,7 @@ class blockParser
                 }
                 $this->setEnded();
                 $inputParser = new inputParser($lineTokens);
-                $this->blockData['contents'][] = $inputParser->dump();
+                $this->blockData['input'] = $inputParser->dump();
                 if(!$inputParser::CAN_WAIT) {
                     unset($inputParser);
                 }

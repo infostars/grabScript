@@ -21,7 +21,11 @@ class gsphp
 
     public function process()
     {
+        $this->initialize();
+        $this->properties();
+        $this->blocks();
 
+        echo $this->content;
     }
 
     protected function putToPointer($pointer, $content)
@@ -31,6 +35,15 @@ class gsphp
             error::throwNewCompileException("Unable to find pointer {$pointer}", 0, 0);
         }
         $this->content = str_replace($pointer, $content, $this->content);
+    }
+
+    protected function replaceByPointer($pointer, $content, $haystack)
+    {
+        $pointer = "%{$pointer}%";
+        if(strpos($haystack, $pointer) === false) {
+            error::throwNewCompileException("Unable to find pointer {$pointer}", 0, 0);
+        }
+        return str_replace($pointer, $content, $haystack);
     }
 
     protected function initialize()
@@ -50,9 +63,112 @@ namespace {$packageData['namespace']};
  */
 class {$packageData['class']}
 {
-%class_content%
+    %properties_init%
+
+    public function _initialize()
+    {
+        %properties_assign%
+    }
+
+    %blocks%
 }
 PHP;
         $this->putToPointer('initialize', $base);
+    }
+
+    private function properties()
+    {
+        $properties_init = "\n";
+        $properties_assign = "\n";
+        foreach($this->structure['vars'] as $var) {
+            $properties_init .= $this->property_init($var);
+            $properties_assign .= $this->property_assign($var);
+        }
+
+        $this->putToPointer('properties_init', $properties_init);
+        $this->putToPointer('properties_assign', $properties_assign);
+    }
+
+    private function blocks()
+    {
+        $blocks = "\n";
+        foreach($this->structure['blocks'] as $block) {
+            $blocks .= $this->block_assign($block);
+        }
+
+        $this->putToPointer('blocks', $blocks);
+    }
+
+    protected function property_init($var)
+    {
+        $content = <<<PHP
+    /**
+     * @var {$var['instanceOf']} {$var['varData']['value']}
+     */
+    protected {$var['varData']['value']}
+
+PHP;
+        return $content;
+    }
+
+    protected function property_assign($var)
+    {
+        $content = <<<PHP
+        \$this->{$var['varName']} = new {$var['instanceOf']}();
+
+PHP;
+        return $content;
+    }
+
+    private function block_assign($block)
+    {
+        $bc = <<<PHP
+    public function {$block['name']}(%input%)
+    {
+        %content%
+
+        %return%
+    }
+
+
+PHP;
+
+        $bc = $this->replaceByPointer('input', $this->block_input($block), $bc);
+        $bc = $this->replaceByPointer('content', $this->block_content($block), $bc);
+        $bc = $this->replaceByPointer('return', $this->block_return($block), $bc);
+
+        return $bc;
+    }
+
+    private function block_input($block)
+    {
+        $input = [];
+        foreach($block['input']['meta'] as $inputParam) {
+            switch($inputParam['type']) {
+                case 'VARIABLE':
+                    $input[] = $inputParam['value'];
+                    break;
+            }
+        }
+
+        return implode(', ', $input);
+    }
+
+    private function block_content($block)
+    {
+    }
+
+    private function block_return($block)
+    {
+        if(empty($block['return'])) {
+            return '';
+        }
+        $return = helper::getValueByToken($block['return']['meta']['put_result_to']);
+        $content = <<<PHP
+return {$return};
+PHP;
+
+        return $content;
+
     }
 }

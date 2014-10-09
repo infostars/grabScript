@@ -87,19 +87,19 @@
         },
         "process": {
             "name": "process",
+            "input": {
+                "type": "input",
+                "meta": [
+                    {
+                        "type": "VARIABLE",
+                        "value": "$url",
+                        "line": 14,
+                        "pos": 10,
+                        "len": 4
+                    }
+                ]
+            },
             "contents": [
-                {
-                    "type": "input",
-                    "meta": [
-                        {
-                            "type": "VARIABLE",
-                            "value": "$url",
-                            "line": 14,
-                            "pos": 10,
-                            "len": 4
-                        }
-                    ]
-                },
                 {
                     "type": "action",
                     "meta": {
