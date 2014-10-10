@@ -17,8 +17,6 @@ class ifTranslator
 
     protected function process()
     {
-        debug_zval_dump($this->blockContent);
-
         $item1 = helper::getValueByToken($this->blockContent['meta']['condition']['item1'])['value'];
         $item2 = helper::getValueByToken($this->blockContent['meta']['condition']['item2'])['value'];
         $cond = helper::getValueByToken($this->blockContent['meta']['condition']['cond'])['value'];
