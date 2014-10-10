@@ -17,8 +17,9 @@ class variableCallTranslator
 
     protected function process()
     {
-        $callable = $this->blockContent['meta']['callable'];
-        $this->sourceCode .= "{$this->soffset}{$callable['varData']['value']}(";
+        $callable = helper::getValueByToken($this->blockContent['meta']['callable']['varData'])['value'];
+
+        $this->sourceCode .= "{$this->soffset}{$callable}(";
         $args = [];
         foreach($this->blockContent['meta']['arguments'] as $argument) {
             $args[] = helper::getValueByToken($argument)['value'];

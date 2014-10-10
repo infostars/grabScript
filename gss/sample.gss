@@ -24,8 +24,8 @@ Block process {
         - put result to $content
 
     Parse:template $content
-        - set match auto
-        - set on_fail skip
+        - set match "auto"
+        - set on_fail "skip"
         - put result to $result
 
     If $result.data.status == false
