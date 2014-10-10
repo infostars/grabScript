@@ -11,6 +11,9 @@ class helper
     public static function dotPathToPhpPath($path)
     {
         $path = trim($path);
+        if(strpos($path, 'this.') === 0) {
+            $path = "\${$path}";
+        }
         $result = '';
         $items = explode('.', $path);
         $isObject = strpos($path, '$') === 0;
@@ -27,6 +30,16 @@ class helper
         }
 
         return $result;
+    }
+
+    public static function callableToSourceCode($data)
+    {
+        $args = [];
+        foreach($data['arguments'] as $argument) {
+            $args[] = helper::getValueByToken($argument)['value'];
+        }
+        $callable = helper::getValueByToken($data['callable'])['value'];
+        return "{$callable}(" . implode(', ', $args) . ");";
     }
 
     public static function dotPathToNamespace($path)
@@ -58,8 +71,18 @@ class helper
         ];
         switch($token['type']) {
             case 'VARIABLE_PATH':
+            case 'VARIABLE_METHOD':
+            case 'THIS_METHOD':
                 $result['type'] = 'mixed';
                 $result['value'] = self::dotPathToPhpPath($token['value']);
+                break;
+            case 'OBJECT_PATH':
+                $result['type'] = 'mixed';
+                $result['value'] = self::dotPathToPhpPath('$' . $token['value']);
+                break;
+            case 'OBJECT':
+                $result['type'] = 'object';
+                $result['value'] = $token['value'];
                 break;
             case 'STRING':
                 $result['type'] = 'string';
@@ -91,6 +114,15 @@ class helper
                 break;
             case 'NULL':
                 $result['type'] = 'null';
+                $result['value'] = $token['value'];
+                break;
+            case 'EQUALS':
+            case 'NOT_EQUALS':
+            case 'GT':
+            case 'GTE':
+            case 'LT':
+            case 'LTE':
+                $result['type'] = 'operator';
                 $result['value'] = $token['value'];
                 break;
         }

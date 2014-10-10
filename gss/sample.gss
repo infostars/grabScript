@@ -19,7 +19,7 @@ Block process {
     Input $url
     Load $url
         - set proxy "random"
-        - set userAgent generate
+        - set userAgent "auto"
         - set attempts 5
         - put result to $content
 

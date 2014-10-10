@@ -20,6 +20,7 @@ class gsphp
     private $structure;
     private $content = '%initialize%';
     private $generator = __CLASS__;
+    private $properties = [];
 
     public function __construct($structure)
     {
@@ -88,6 +89,7 @@ PHP;
     {
         $properties_init = "\n";
         $properties_assign = "\n";
+        $this->properties = '';
         foreach($this->structure['vars'] as $var) {
             $properties_init .= $this->property_init($var);
             $properties_assign .= $this->property_assign($var);
@@ -125,6 +127,8 @@ PHP;
         \$this->{$var['varName']} = new {$var['instanceOf']}();
 
 PHP;
+        $this->properties .= "\${$var['varName']} =& \$this->{$var['varName']};\n        ";
+
         return $content;
     }
 
@@ -140,6 +144,7 @@ PHP;
      **/
     public function {$block['name']}(%input%)
     {
+        {$this->properties}
         %content%
 
         %return%
@@ -210,7 +215,7 @@ PHP;
             $result[] = $translator->getSourceCode();
         }
 
-        return $result;
+        return implode("\n", $result);
     }
 
     private function block_return($block)
