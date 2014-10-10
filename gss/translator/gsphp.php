@@ -3,6 +3,12 @@
 namespace greevex\gss\translator;
 
 use greevex\gss\lib\error;
+use greevex\gss\translator\action\actionTranslator;
+use greevex\gss\translator\action\foreachTranslator;
+use greevex\gss\translator\action\ifTranslator;
+use greevex\gss\translator\action\variableActionTranslator;
+use greevex\gss\translator\action\variableCallTranslator;
+use greevex\gss\translator\action\translatorInterface;
 
 /**
  * @author greevex
@@ -177,23 +183,34 @@ PHP;
 
     private function block_content($block)
     {
+        $result = [];
+        /** @var translatorInterface $translator */
+        $translator = null;
         foreach($block['contents'] as $content) {
             switch($content['type']) {
                 case 'variable_action':
+                    $translator = new variableActionTranslator($content);
                     break;
                 case 'variable_call':
+                    $translator = new variableCallTranslator($content);
                     break;
                 case 'foreach':
+                    $translator = new foreachTranslator($content);
                     break;
                 case 'action':
+                    $translator = new actionTranslator($content);
                     break;
                 case 'if':
+                    $translator = new ifTranslator($content);
                     break;
                 default:
                     error::throwNewCompileException("Unexpected block content action {$content['type']}", $block['line']);
                     break;
             }
+            $result[] = $translator->getSourceCode();
         }
+
+        return $result;
     }
 
     private function block_return($block)
