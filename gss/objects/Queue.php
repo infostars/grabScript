@@ -3,7 +3,7 @@
 namespace greevex\gss\objects;
 
 class Queue
-    extends \ArrayIterator
+    extends \RecursiveArrayIterator
 {
     public function __construct()
     {
@@ -11,6 +11,11 @@ class Queue
     }
 
     public function append($item)
+    {
+
+    }
+
+    public function getNext()
     {
 
     }

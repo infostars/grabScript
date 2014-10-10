@@ -18,13 +18,15 @@ class foreachTranslator
     protected function process()
     {
         $pointer = '%pointer%';
-        $from = helper::getValueByToken($this->blockContent['meta']['from'])['value'];
+        $from = helper::getValueByToken($this->blockContent['meta']['from']);
         if(isset($this->blockContent['meta']['params']['item'])) {
             $item = helper::getValueByToken($this->blockContent['meta']['params']['item'])['value'];
         } else {
             $item = '$item';
         }
-        $this->sourceCode .= "{$this->soffset}while({$item} = array_shift({$from})) {\n{$this->soffset}    {$pointer}\n{$this->soffset}}";
+        $fromValue = $from['type'] == 'object' ? "{$from['value']}->getNext()" : "array_shift({$from['value']})";
+
+        $this->sourceCode .= "{$this->soffset}while({$item} = {$fromValue}) {\n{$this->soffset}    {$pointer}\n{$this->soffset}}";
 
         if(isset($this->blockContent['meta']['call'])) {
             foreach($this->blockContent['meta']['call'] as $call) {

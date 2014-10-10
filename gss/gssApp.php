@@ -26,8 +26,16 @@ require_once __DIR__ . '/translator/action/foreachTranslator.php';
 require_once __DIR__ . '/translator/action/ifTranslator.php';
 require_once __DIR__ . '/translator/action/variableActionTranslator.php';
 require_once __DIR__ . '/translator/action/variableCallTranslator.php';
+require_once __DIR__ . '/objects/_objectBase.php';
+require_once __DIR__ . '/objects/Float.php';
+require_once __DIR__ . '/objects/Integer.php';
+require_once __DIR__ . '/objects/Load.php';
+require_once __DIR__ . '/objects/Parse.php';
+require_once __DIR__ . '/objects/Queue.php';
+require_once __DIR__ . '/objects/SDS.php';
+require_once __DIR__ . '/objects/String.php';
 
-$scanner = new fileScanner(__DIR__ . '/sample.gss');
+$scanner = new fileScanner(__DIR__ . '/test.gss');
 $structure = $scanner->scan();
 //echo json_encode($structure, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL;
 //echo "=============\n";

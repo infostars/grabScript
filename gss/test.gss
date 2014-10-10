@@ -1,0 +1,14 @@
+
+Package "sds.sdk.test"
+
+Block start {
+    Var Queue $queue
+
+    $text = "Hello, world!"
+
+    $queue.append $text
+
+    Foreach $queue
+        - set item $item
+        - call SDS.output.print $item
+}
