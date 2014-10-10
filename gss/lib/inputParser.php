@@ -20,6 +20,7 @@ class inputParser
 
     public function __construct($lineTokens)
     {
+        $ftoken = reset($lineTokens);
         foreach($lineTokens as $lineToken) {
             switch($lineToken['type']) {
                 case 'VARIABLE':
@@ -28,7 +29,7 @@ class inputParser
             }
         }
         if(!$this->variableCallData['meta']) {
-            error::throwNewException("Unable to find callable", $lineTokens[0]['line'], $lineTokens[0]['pos']);
+            error::throwNewException("Unable to find callable", $ftoken['line'], $ftoken['pos']);
         }
     }
 

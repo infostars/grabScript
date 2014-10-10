@@ -177,6 +177,7 @@ PHP;
 
     private function block_content($block)
     {
+        
     }
 
     private function block_return($block)

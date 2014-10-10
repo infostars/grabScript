@@ -2,6 +2,11 @@
 Package "sds.sdk.test.start"
 
 Var Queue $queue
+Var Integer $count
+
+Block test {
+    $count = $count + 1
+}
 
 Block start {
     $queue.append "http://yandex.ru"
@@ -17,16 +22,20 @@ Block process {
         - set userAgent generate
         - set attempts 5
         - put result to $content
+
     Parse:template $content
         - set match auto
         - set on_fail skip
         - put result to $result
+
     If $result.data.status == false
         - call SDS.output.print "Status FAIL"
         - set break true
+
     Foreach $result.data.items
         - set item $item
         - call SDS.api.document.post $item
+
     Foreach $result.data.links
         - set item $link
         - call $queue.append $link

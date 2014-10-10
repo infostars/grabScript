@@ -10,6 +10,7 @@ require_once __DIR__ . '/lib/codeScanner.php';
 require_once __DIR__ . '/lib/tokenParser.php';
 require_once __DIR__ . '/lib/blockParser.php';
 require_once __DIR__ . '/lib/variableMethodParser.php';
+require_once __DIR__ . '/lib/variableAction.php';
 require_once __DIR__ . '/lib/foreachParser.php';
 require_once __DIR__ . '/lib/inputParser.php';
 require_once __DIR__ . '/lib/actionParser.php';
@@ -21,6 +22,6 @@ require_once __DIR__ . '/translator/helper.php';
 
 $scanner = new fileScanner(__DIR__ . '/sample.gss');
 $structure = $scanner->scan();
-//echo json_encode($structure, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+echo json_encode($structure, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 $gsphp = new gsphp($structure);
 $gsphp->process();

@@ -82,6 +82,18 @@ class blockParser
                     unset($variableMethod);
                 }
                 break;
+            case 'VARIABLE':
+            case 'VARIABLE_PATH':
+                if($this->checkInstances($lineTokens)) {
+                    break;
+                }
+                $this->setEnded();
+                $variableAction = new variableAction($lineTokens);
+                $this->blockData['contents'][] = $variableAction->dump();
+                if(!$variableAction::CAN_WAIT) {
+                    unset($variableAction);
+                }
+                break;
             case 'OBJECT':
                 if($this->checkInstances($lineTokens)) {
                     break;
