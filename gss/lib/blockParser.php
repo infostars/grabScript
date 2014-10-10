@@ -160,9 +160,10 @@ class blockParser
         return false;
     }
 
-    public function setStarted()
+    public function setStarted($lineNumber)
     {
         $this->blockData['started'] = true;
+        $this->blockData['line'] = $lineNumber;
     }
 
     public function setEnded()

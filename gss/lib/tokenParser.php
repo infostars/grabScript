@@ -73,7 +73,7 @@ class tokenParser
                             return error::throwNewException('Unable to find block name', $lineNumber, $lineToken['pos']);
                         }
                         $currentBlock = $block['blockname'];
-                        blockParser::factory($currentBlock)->setStarted();
+                        blockParser::factory($currentBlock)->setStarted($lineNumber);
                         break 2;
                     case 'BLOCK_END':
                         if(!isset($currentBlock)) {

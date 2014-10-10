@@ -177,7 +177,23 @@ PHP;
 
     private function block_content($block)
     {
-        
+        foreach($block['contents'] as $content) {
+            switch($content['type']) {
+                case 'variable_action':
+                    break;
+                case 'variable_call':
+                    break;
+                case 'foreach':
+                    break;
+                case 'action':
+                    break;
+                case 'if':
+                    break;
+                default:
+                    error::throwNewCompileException("Unexpected block content action {$content['type']}", $block['line']);
+                    break;
+            }
+        }
     }
 
     private function block_return($block)

@@ -55,7 +55,6 @@ TEXT;
  from {$backtrace['class']}.{$backtrace['function']} at {$backtrace['line']}
 TEXT;
         error_log($errorMessage);
-        debug_print_backtrace();
         return exit(1);
     }
 }
