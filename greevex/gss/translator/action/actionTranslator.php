@@ -17,11 +17,8 @@ class actionTranslator
 
     protected function process()
     {
-        if(isset($this->blockContent['meta']['put_result_to'])) {
-            $resVar = helper::getValueByToken($this->blockContent['meta']['put_result_to'])['value'];
-        } else {
-            $resVar = '$gen_' . crc32(json_encode($this->blockContent));
-        }
+        $resVar = '$gen_' . crc32(json_encode($this->blockContent));
+
         $args = [];
         foreach($this->blockContent['meta']['arguments'] as $argument) {
             $args[] = helper::getValueByToken($argument)['value'];
@@ -42,6 +39,13 @@ class actionTranslator
             $paramValue = helper::getValueByToken($value)['value'];
             $this->sourceCode .= "\n{$this->soffset}{$resVar}->setParam('{$param}', {$paramValue});";
         }
-        $this->sourceCode .= "\n{$this->soffset}{$resVar}->execute();";
+        if(isset($this->blockContent['meta']['put_result_to'])) {
+            $outputVar = helper::getValueByToken($this->blockContent['meta']['put_result_to'])['value'];
+        }
+        $this->sourceCode .= "\n{$this->soffset}";
+        if(isset($outputVar)) {
+            $this->sourceCode .= "{$outputVar} = ";
+        }
+        $this->sourceCode .= "{$resVar}->execute();";
     }
 }

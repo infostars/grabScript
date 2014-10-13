@@ -18,15 +18,32 @@ class foreachTranslator
     protected function process()
     {
         $pointer = '%pointer%';
-        $from = helper::getValueByToken($this->blockContent['meta']['from']);
+        $fromOrigin = $this->blockContent['meta']['from'];
+        $from = helper::getValueByToken($fromOrigin);
         if(isset($this->blockContent['meta']['params']['item'])) {
             $item = helper::getValueByToken($this->blockContent['meta']['params']['item'])['value'];
         } else {
             $item = '$item';
         }
-        $fromValue = $from['type'] == 'object' ? "{$from['value']}->getNext()" : "array_shift({$from['value']})";
+        $this->sourceCode .= <<<PHP
+{$this->soffset}if(is_object({$from['value']}) && method_exists({$from['value']}, 'getNext')) {
+{$this->soffset}    while({$item} = {$from['value']}->getNext()) {
+{$this->soffset}        {$pointer}
+{$this->soffset}    }
+{$this->soffset}} elseif(is_array({$from['value']})) {
+{$this->soffset}    while({$item} = array_shift({$from['value']})) {
+{$this->soffset}        {$pointer}
+{$this->soffset}    }
+{$this->soffset}} elseif(is_object({$from['value']})) {
+{$this->soffset}    {$from['value']} = (array){$from['value']};
+{$this->soffset}    while({$item} = array_shift({$from['value']})) {
+{$this->soffset}        {$pointer}
+{$this->soffset}    }
+{$this->soffset}} else {
+{$this->soffset}    error::throwNewException("Unexpected variable type of \\{$from['value']}", {$fromOrigin['line']}, {$fromOrigin['pos']});
+{$this->soffset}}
+PHP;
 
-        $this->sourceCode .= "{$this->soffset}while({$item} = {$fromValue}) {\n{$this->soffset}    {$pointer}\n{$this->soffset}}";
 
         if(isset($this->blockContent['meta']['call'])) {
             foreach($this->blockContent['meta']['call'] as $call) {

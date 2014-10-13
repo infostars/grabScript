@@ -35,7 +35,7 @@ require_once __DIR__ . '/objects/Queue.php';
 require_once __DIR__ . '/objects/SDS.php';
 require_once __DIR__ . '/objects/String.php';
 
-$scanner = new fileScanner(__DIR__ . '/test.gss');
+$scanner = new fileScanner(__DIR__ . '/sample.gss');
 $structure = $scanner->scan();
 //echo json_encode($structure, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL;
 //echo "=============\n";

@@ -1,0 +1,6 @@
+
+Package "sds.sdk.test"
+
+Block start {
+    Call SDS.output.print "Hello, world!"
+}

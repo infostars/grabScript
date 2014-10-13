@@ -2,7 +2,7 @@
 
 namespace greevex\gss\objects;
 
-class _objectBase
+abstract class _objectBase
 {
     protected $params = [];
 
@@ -11,8 +11,6 @@ class _objectBase
         $this->params[$param] = $value;
     }
 
-    public function execute()
-    {
+    abstract public function execute();
 
-    }
 }

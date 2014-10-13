@@ -17,6 +17,9 @@ Block start {
 
 Block process {
     Input $url
+
+    Call SDS.output.print "Processing {$url}"
+
     Load $url
         - set proxy "random"
         - set userAgent "auto"
@@ -39,6 +42,8 @@ Block process {
     Foreach $result.data.links
         - set item $link
         - call $queue.append $link
+
+    Call SDS.output.print "Done!"
 
     Return $result
 }
