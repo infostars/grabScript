@@ -90,7 +90,6 @@ AL;
 
 
         $base = <<<PHP
-<?php
 
 namespace {$packageData['namespace']};
 
