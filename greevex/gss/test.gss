@@ -2,5 +2,8 @@
 Package "sds.sdk.test"
 
 Block start {
+
+    $var = 123
+
     Call SDS.output.print "Hello, world!"
 }

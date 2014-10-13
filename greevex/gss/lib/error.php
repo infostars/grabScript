@@ -24,11 +24,14 @@ class error
  on line {$line} at offset {$pos}
 TEXT;
         }
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1];
-        $errorMessage .= <<<TEXT
+        $backtraceArray = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+        if(isset($backtraceArray[1])) {
+            $backtrace = $backtraceArray[1];
+            $errorMessage .= <<<TEXT
 
  from {$backtrace['class']}.{$backtrace['function']} at {$backtrace['line']}
 TEXT;
+        }
         error_log($errorMessage);
         return exit(1);
     }

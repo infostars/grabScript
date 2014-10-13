@@ -4,6 +4,8 @@ namespace greevex\gss\objects;
 
 use greevex\gss\lib\error;
 
+require_once __DIR__ . '/_objectBase.php';
+
 class Parse
     extends _objectBase
 {

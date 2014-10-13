@@ -2,6 +2,8 @@
 
 namespace greevex\gss\objects;
 
+require_once __DIR__ . '/_objectBase.php';
+
 class Load
     extends _objectBase
 {

@@ -27,13 +27,14 @@ class gsphp
         $this->structure = $structure;
     }
 
+
     public function process()
     {
         $this->initialize();
         $this->properties();
         $this->blocks();
 
-        echo $this->content;
+        return $this->content;
     }
 
     protected function putToPointer($pointer, $content)
@@ -69,7 +70,6 @@ class gsphp
                 continue;
             }
             $objectName = substr($file, 0, -4);
-            $objects[] = $objectName;
             if(strpos($objectName, '_') !== 0) {
                 $usages .= "use greevex\\gss\\objects\\{$objectName};\n";
             }
@@ -94,9 +94,6 @@ AL;
 
 namespace {$packageData['namespace']};
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 {$autoloader}
 
 use greevex\\gss\\lib\\error;
@@ -114,7 +111,6 @@ class {$packageData['class']}
 
     public function _initialize()
     {
-        error_log('Initializing application {$packageData['namespace']}\\{$packageData['class']}');
         %properties_assign%
     }
 
@@ -187,7 +183,6 @@ PHP;
      **/
     public function {$block['name']}(%input%)
     {
-        error_log("Starting block {$block['name']}");
         \$SDS = SDS::getInstance();
 
         {$this->properties}
@@ -285,6 +280,5 @@ PHP;
 
 
         return $result;
-
     }
 }
